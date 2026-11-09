@@ -634,9 +634,10 @@ function renderRole(){
   if(nuvemOn&&sessaoPerfil){
     var nome=nomeInt(sessaoPerfil.membro_id)||(sessaoPerfil.nome_completo||"").split(" ")[0]||"Você";
     if(sessaoPerfil.is_admin){
+      if(modoAtual==="integrante") usuarioId=sessaoPerfil.membro_id;
       html='<button class="role '+(modoAtual==="admin"?"on":"")+'" onclick="setModo(\'admin\')">👑 Líder</button>'
         +'<button class="role '+(modoAtual==="integrante"?"on":"")+'" onclick="setModo(\'integrante\')">🎙 Ver como integrante</button>';
-      if(modoAtual==="integrante"){ var ints=DB.integrantes.filter(function(i){return i.ativo&&(!i.foraDaConta||i.fixaVocal)}).sort(function(a,b){return a.nome.localeCompare(b.nome)}); html+='<select class="role-sel" onchange="setUsuario(this.value)">'+ints.map(function(i){return '<option value="'+i.id+'"'+(i.id===usuarioId?" selected":"")+'>'+esc(i.nome)+'</option>'}).join("")+'</select>'; }
+      if(modoAtual==="integrante"){ html+='<span class="role on" style="pointer-events:none">🎙 '+esc(nome)+'</span>'; }
     } else {
       html='<span class="role on" style="pointer-events:none">🎙 '+esc(nome)+'</span>';
     }
@@ -664,7 +665,7 @@ function renderTabs(){
   }).join("");
 }
 function setModo(m){ modoAtual=m;
-  if(m==="integrante"){ if(!usuarioId){var f=DB.integrantes.filter(function(i){return i.ativo&&(!i.foraDaConta||i.fixaVocal)})[0]; usuarioId=f?f.id:null;} secaoAtual="meu_inicio"; }
+  if(m==="integrante"){ if(nuvemOn&&sessaoPerfil){ usuarioId=sessaoPerfil.membro_id; } else if(!usuarioId){var f=DB.integrantes.filter(function(i){return i.ativo&&(!i.foraDaConta||i.fixaVocal)})[0]; usuarioId=f?f.id:null;} secaoAtual="meu_inicio"; }
   else { secaoAtual="painel"; }
   render(); window.scrollTo(0,0);
 }
